@@ -66,7 +66,7 @@ export default function HomeScreen() {
                             value={artistQuery}
                             onChangeText={(t) => {
                                 setArtistQuery(t);
-                                setSelectedArtist(null); // Reset selection on edit
+                                setSelectedArtist(null);
                             }}
                         />
                         {searching && <ActivityIndicator style={{ position: 'absolute', right: 15, top: 15 }} color={Colors.primary} />}
