@@ -16,20 +16,47 @@ export default function Layout() {
         Inter_600SemiBold,
     });
 
+    // Add state to track if we should bypass font loading
+    const [fontsWaitOver, setFontsWaitOver] = useState(false);
+
+    useEffect(() => {
+        // Force font completion after 2 seconds
+        const fontTimeout = setTimeout(() => {
+            if (!fontsLoaded) {
+                console.log("Font loading timed out - using system fonts");
+                setFontsWaitOver(true);
+            }
+        }, 2000);
+        return () => clearTimeout(fontTimeout);
+    }, [fontsLoaded]);
+
     const [user, setUser] = useState<any>(null);
     const [authError, setAuthError] = useState<string>('');
 
     useEffect(() => {
+        // Timeout to bypass stuck auth after 1 second (aggressive)
+        const timeout = setTimeout(() => {
+            if (!user) {
+                console.log("Auth timeout - proceeding without auth");
+                setUser({ uid: 'offline-' + Date.now() });
+            }
+        }, 1000);
+
         // Anonymous Sign In
         signInAnonymously(auth)
             .then((userCredential) => {
                 console.log("Signed in anonymously:", userCredential.user.uid);
                 setUser(userCredential.user);
+                clearTimeout(timeout);
             })
             .catch((error) => {
                 console.error("Auth Error:", error);
                 setAuthError(error.message);
+                // Still proceed after error
+                setUser({ uid: 'error-' + Date.now() });
             });
+
+        return () => clearTimeout(timeout);
     }, []);
 
     if (authError) {
@@ -41,11 +68,26 @@ export default function Layout() {
         );
     }
 
-    if (!fontsLoaded || !user) {
+    // Force load content even if fonts/auth are pending (for debugging)
+    // if (!fontsLoaded || !user) {
+    //    return ...
+    // }
+
+    if (!fontsLoaded && !fontsWaitOver) {
+        // Return basic loading only for fonts
         return (
             <View style={{ flex: 1, backgroundColor: Colors.background, justifyContent: 'center', alignItems: 'center' }}>
                 <ActivityIndicator color={Colors.primary} size="large" />
-                <Text style={{ color: Colors.textSecondary, marginTop: 20 }}>Signing in...</Text>
+                <Text style={{ color: Colors.textSecondary, marginTop: 20 }}>Loading Fonts...</Text>
+            </View>
+        );
+    }
+
+    if (!user) {
+        return (
+            <View style={{ flex: 1, backgroundColor: Colors.background, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator color={Colors.primary} size="large" />
+                <Text style={{ color: Colors.textSecondary, marginTop: 20 }}>Creating Guest Account...</Text>
             </View>
         );
     }

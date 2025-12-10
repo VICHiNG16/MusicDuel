@@ -1,5 +1,8 @@
 {
   "expo": {
+    "experiments": {
+      "baseUrl": "/MusicDuel"
+    },
     "name": "midnight-music-duel",
     "slug": "midnight-music-duel",
     "version": "1.0.0",
