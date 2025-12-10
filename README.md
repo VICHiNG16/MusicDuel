@@ -2,6 +2,11 @@
 
 **Real-time music trivia for iOS & Android.**
 
+![React Native](https://img.shields.io/badge/React%20Native-20232a?style=for-the-badge&logo=react&logoColor=61dafb)
+![Expo](https://img.shields.io/badge/Expo-000020?style=for-the-badge&logo=expo&logoColor=white)
+![Firebase](https://img.shields.io/badge/Firebase-ffca28?style=for-the-badge&logo=firebase&logoColor=black)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+
 Challenge friends to guess songs from your favorite artists. Features synchronized audio playback using the iTunes API and Firebase Realtime Database.
 
 <p align="center">

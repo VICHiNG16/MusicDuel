@@ -30,13 +30,25 @@ export async function fetchMusicData(artist: string): Promise<Song[]> {
 export async function searchArtists(query: string) {
     if (!query || query.length < 2) return [];
     try {
-        const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=musicArtist&limit=5`);
+        // Search albums to get artwork (artist entity doesn't have images)
+        const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=album&attribute=artistTerm&limit=20`);
         const data = await response.json();
-        return data.results.map((r: any) => ({
-            artistId: r.artistId,
-            artistName: r.artistName,
-            primaryGenreName: r.primaryGenreName
-        }));
+
+        // Deduplicate artists
+        const uniqueArtists = new Map();
+
+        data.results.forEach((r: any) => {
+            if (!uniqueArtists.has(r.artistName)) {
+                uniqueArtists.set(r.artistName, {
+                    artistId: r.artistId,
+                    artistName: r.artistName,
+                    primaryGenreName: r.primaryGenreName,
+                    image: r.artworkUrl100 // Use album art as artist image
+                });
+            }
+        });
+
+        return Array.from(uniqueArtists.values()).slice(0, 5);
     } catch (error) {
         console.error("Error searching artists:", error);
         return [];

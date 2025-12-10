@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TextInput, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, ActivityIndicator, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -81,8 +81,13 @@ export default function HomeScreen() {
                                     style={styles.dropdownItem}
                                     onPress={() => selectArtist(item.artistName)}
                                 >
-                                    <Text style={styles.dropdownTitle}>{item.artistName}</Text>
-                                    <Text style={styles.dropdownSubtitle}>{item.primaryGenreName}</Text>
+                                    {item.image && (
+                                        <Image source={{ uri: item.image }} style={styles.artistImage} />
+                                    )}
+                                    <View style={{ flex: 1 }}>
+                                        <Text style={styles.dropdownTitle}>{item.artistName}</Text>
+                                        <Text style={styles.dropdownSubtitle}>{item.primaryGenreName}</Text>
+                                    </View>
                                 </Pressable>
                             ))}
                         </View>
@@ -177,9 +182,18 @@ const styles = StyleSheet.create({
         marginBottom: 10
     },
     dropdownItem: {
-        padding: 16,
+        padding: 12,
         borderBottomWidth: 1,
-        borderBottomColor: 'rgba(255,255,255,0.05)'
+        borderBottomColor: 'rgba(255,255,255,0.05)',
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12
+    },
+    artistImage: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: Colors.surfaceHighlight
     },
     dropdownTitle: {
         color: Colors.text,
