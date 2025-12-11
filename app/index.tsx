@@ -6,6 +6,8 @@ import { BackgroundGradient } from '../components/BackgroundGradient';
 import { GlassButton } from '../components/GlassButton';
 import { Colors } from '../constants/Colors';
 import { searchArtists } from '../utils/itunes';
+import { Ionicons } from '@expo/vector-icons';
+import { SettingsModal } from '../components/SettingsModal';
 
 export default function HomeScreen() {
     const router = useRouter();
@@ -14,6 +16,7 @@ export default function HomeScreen() {
     const [selectedArtist, setSelectedArtist] = useState<string | null>(null);
     const [searchResults, setSearchResults] = useState<any[]>([]);
     const [searching, setSearching] = useState(false);
+    const [settingsVisible, setSettingsVisible] = useState(false);
 
     // Debounce search
     useEffect(() => {
@@ -43,6 +46,12 @@ export default function HomeScreen() {
         router.push(`/lobby/${roomId}?isHost=true&artist=${encodeURIComponent(selectedArtist)}`);
     };
 
+    const createSoloRoom = () => {
+        if (!selectedArtist) return;
+        const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
+        router.push(`/lobby/${roomId}?isHost=true&mode=solo&artist=${encodeURIComponent(selectedArtist)}`);
+    };
+
     const joinRoom = () => {
         if (gameCode.length > 0) {
             router.push(`/lobby/${gameCode}?isHost=false`);
@@ -53,6 +62,18 @@ export default function HomeScreen() {
         <View style={styles.container}>
             <BackgroundGradient />
             <SafeAreaView style={styles.content}>
+                <Pressable
+                    onPress={() => setSettingsVisible(true)}
+                    style={{ position: 'absolute', top: 50, right: 20, zIndex: 10 }}
+                >
+                    <Ionicons name="settings-outline" size={28} color={Colors.textSecondary} />
+                </Pressable>
+
+                <SettingsModal
+                    visible={settingsVisible}
+                    onClose={() => setSettingsVisible(false)}
+                />
+
                 <Text style={styles.title}>1V1</Text>
                 <Text style={styles.subtitle}>MUSIC DUEL</Text>
 
@@ -94,7 +115,10 @@ export default function HomeScreen() {
                     )}
 
                     {selectedArtist && (
-                        <GlassButton title="Create Room" onPress={createRoom} />
+                        <View style={{ gap: 10 }}>
+                            <GlassButton title="Create Room" onPress={createRoom} />
+                            <GlassButton title="Play Solo" onPress={createSoloRoom} style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />
+                        </View>
                     )}
                 </View>
 

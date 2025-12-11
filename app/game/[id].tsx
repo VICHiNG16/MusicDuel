@@ -11,9 +11,10 @@ import Animated, { FadeIn, SlideInDown, ZoomIn, FadeInUp, useSharedValue, useAni
 import { BlurView } from 'expo-blur';
 import { ScoreTicker } from '../../components/ScoreTicker';
 import { SongCard } from '../../components/SongCard';
+import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 
 export default function GameScreen() {
-    const { id, isHost } = useLocalSearchParams();
+    const { id, isHost, mode } = useLocalSearchParams();
     const router = useRouter();
     const [gameData, setGameData] = useState<any>(null);
     const [timeRemaining, setTimeRemaining] = useState(30);
@@ -139,20 +140,23 @@ export default function GameScreen() {
         }
     };
 
-    // Host Logic: Watch for both guesses -> Reveal
+    // Host Logic: Watch for guesses -> Reveal
     useEffect(() => {
         if (isHost === 'true' && gameData?.playerGuesses && gameData.gameState !== 'reveal') {
             const { host, guest } = gameData.playerGuesses;
             // CHECK: Ensure we haven't already processed this round
             if (revealProcessed.current === gameData.currentRound) return;
 
-            if (host && guest) {
+            const isSolo = mode === 'solo';
+            const readyToReveal = isSolo ? !!host : (host && guest);
+
+            if (readyToReveal) {
                 revealProcessed.current = gameData.currentRound; // Lock it
 
-                // Both guessed, wait a short moment or reveal immediately
                 // Update scores
-                const newHostScore = (gameData.scores?.host || 0) + (host.scoreDelta || 0);
-                const newGuestScore = (gameData.scores?.guest || 0) + (guest.scoreDelta || 0);
+                const newHostScore = (gameData.scores?.host || 0) + (host?.scoreDelta || 0);
+                // Guest score stays same in solo or updates in multi
+                const newGuestScore = (gameData.scores?.guest || 0) + (guest?.scoreDelta || 0);
 
                 update(ref(db, `rooms/${id}`), {
                     gameState: 'reveal',
@@ -163,7 +167,7 @@ export default function GameScreen() {
                 });
             }
         }
-    }, [gameData?.playerGuesses, isHost, gameData?.currentRound]);
+    }, [gameData?.playerGuesses, isHost, gameData?.currentRound, mode]);
 
     // Host Logic: Next Round
     const handleNextRoundVote = async () => {
@@ -173,8 +177,10 @@ export default function GameScreen() {
     useEffect(() => {
         if (isHost === 'true' && gameData?.nextRoundVotes) {
             const { host, guest } = gameData.nextRoundVotes;
-            // CHANGED: If ANYONE is ready, go to next round
-            if (host?.ready || guest?.ready) {
+            const isSolo = mode === 'solo';
+
+            // In Solo, only host needs to be ready. In multi, either (or usually both, but logic here says If ANYONE).
+            if (host?.ready || (!isSolo && guest?.ready)) {
                 // Advance round
                 const nextRound = (gameData.currentRound || 0) + 1;
 
@@ -193,7 +199,7 @@ export default function GameScreen() {
                 });
             }
         }
-    }, [gameData?.nextRoundVotes, isHost]);
+    }, [gameData?.nextRoundVotes, isHost, mode]);
 
 
     if (!gameData || !currentSong) {
@@ -213,6 +219,8 @@ export default function GameScreen() {
         if (myScore > oppScore) result = "VICTORY";
         if (myScore < oppScore) result = "DEFEAT";
 
+        if (mode === 'solo') result = "SOLO RUN";
+
         return (
             <View style={styles.container}>
                 <BackgroundGradient />
@@ -220,7 +228,16 @@ export default function GameScreen() {
                     <Text style={styles.gameOverTitle}>{result}</Text>
                     <Text style={styles.finalScore}>Final Score: {myScore}</Text>
                     <Text style={styles.finalScoreOpp}>Opponent: {oppScore}</Text>
-                    <GlassButton title="Return to Lobby" onPress={() => router.replace('/')} style={{ marginTop: 50 }} />
+                    <GlassButton title="Return to Lobby" onPress={() => router.replace('/')} style={{ marginTop: 50, marginBottom: 20 }} />
+                    <View style={styles.adContainer}>
+                        <BannerAd
+                            unitId={TestIds.BANNER}
+                            size={BannerAdSize.MEDIUM_RECTANGLE}
+                            requestOptions={{
+                                requestNonPersonalizedAdsOnly: true,
+                            }}
+                        />
+                    </View>
                 </View>
             </View>
         );
@@ -383,5 +400,15 @@ const styles = StyleSheet.create({
     gameOverTitle: { fontSize: 50, color: Colors.primary, fontWeight: '900', marginBottom: 40 },
     finalScore: { fontSize: 30, color: Colors.text, marginBottom: 10 },
     finalScoreOpp: { fontSize: 20, color: Colors.textSecondary },
-    miniDelta: { color: Colors.success, fontSize: 14, fontWeight: 'bold', marginTop: 4 }
+    miniDelta: { color: Colors.success, fontSize: 14, fontWeight: 'bold', marginTop: 4 },
+    adContainer: {
+        marginTop: 20,
+        borderRadius: 20,
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.1)',
+        backgroundColor: 'rgba(0,0,0,0.3)',
+        alignItems: 'center',
+        justifyContent: 'center'
+    }
 });

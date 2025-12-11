@@ -9,11 +9,13 @@ import { db } from '../../utils/firebaseConfig';
 import { fetchMusicData } from '../../utils/itunes';
 
 export default function LobbyScreen() {
-    const { id, isHost, artist } = useLocalSearchParams();
+    const { id, isHost, artist, mode } = useLocalSearchParams();
     const router = useRouter();
     const [status, setStatus] = useState('waiting');
     const [guestJoined, setGuestJoined] = useState(false);
     const [error, setError] = useState('');
+
+    const isSolo = mode === 'solo';
 
     // Host setup
     useEffect(() => {
@@ -102,7 +104,7 @@ export default function LobbyScreen() {
                 gameState: 'preview' // 'preview', 'waiting', 'reveal'
             });
 
-            router.replace(`/game/${id}?isHost=true`);
+            router.replace(`/game/${id}?isHost=true&mode=${isSolo ? 'solo' : 'multi'}`);
         } catch (e) {
             console.error(e);
             setError('Failed to start game');
@@ -123,9 +125,9 @@ export default function LobbyScreen() {
                             Artist: <Text style={{ color: Colors.primary }}>{artist}</Text>
                         </Text>
                         <Text style={styles.status}>
-                            {guestJoined ? "Player 2 Joined!" : "Waiting for opponent..."}
+                            {isSolo ? "Solo Mode Active" : (guestJoined ? "Player 2 Joined!" : "Waiting for opponent...")}
                         </Text>
-                        {guestJoined && (
+                        {(guestJoined || isSolo) && (
                             <GlassButton
                                 title={status === 'loading' ? "Loading..." : "START GAME"}
                                 onPress={startGame}
