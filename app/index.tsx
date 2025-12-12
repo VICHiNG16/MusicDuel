@@ -74,8 +74,8 @@ export default function HomeScreen() {
                     onClose={() => setSettingsVisible(false)}
                 />
 
-                <Text style={styles.title}>1V1</Text>
-                <Text style={styles.subtitle}>MUSIC DUEL</Text>
+                <Text style={styles.title}>MUSI</Text>
+                <Text style={styles.subtitle}>GUESS</Text>
 
                 <View style={styles.section}>
                     <Text style={styles.label}>HOST GAME</Text>

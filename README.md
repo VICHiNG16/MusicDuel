@@ -1,4 +1,4 @@
-# 🎵 1V1 Music Duel
+# 🎵 MusiGuess
 
 **Real-time music trivia for iOS & Android.**
 
@@ -10,14 +10,9 @@
 Challenge friends to guess songs from your favorite artists. Features synchronized audio playback using the iTunes API and Firebase Realtime Database.
 
 <p align="center">
-  <!-- 
-    CAPTURE SCREENSHOTS AND ADD THEM TO: assets/screenshots/
-    THEN UNCOMMENT THESE LINES:
-  -->
-  <!-- <img src="assets/screenshots/home.png" width="24%" /> -->
-  <!-- <img src="assets/screenshots/search.png" width="24%" /> -->
-  <!-- <img src="assets/screenshots/lobby.png" width="24%" /> -->
-  <!-- <img src="assets/screenshots/game.png" width="24%" /> -->
+  <img src="assets/screenshots/home.png" width="30%" />
+  <img src="assets/screenshots/gameplay.png" width="30%" />
+  <img src="assets/screenshots/result.png" width="30%" />
 </p>
 
 ## Features
@@ -40,7 +35,7 @@ Built with **React Native (Expo)**.
 2. `npx expo start`
 
 ## Deployment
-Hosted on GitHub Pages: [viching16.github.io/MusicDuel](https://viching16.github.io/MusicDuel)
+Hosted on GitHub Pages: [viching16.github.io/MusiGuess](https://viching16.github.io/MusiGuess)
 
-Android APK available in [Releases](https://github.com/VICHiNG16/MusicDuel/releases).
+Android APK available in [Releases](https://github.com/VICHiNG16/MusiGuess/releases).
 

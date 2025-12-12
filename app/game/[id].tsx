@@ -67,7 +67,7 @@ export default function GameScreen() {
 
                 const { sound: newSound } = await Audio.Sound.createAsync(
                     { uri: currentSong.previewUrl },
-                    { shouldPlay: false } // CHANGED: Auto play off
+                    { shouldPlay: false }
                 );
                 setSound(newSound);
                 setIsPlaying(false);
@@ -144,7 +144,7 @@ export default function GameScreen() {
     useEffect(() => {
         if (isHost === 'true' && gameData?.playerGuesses && gameData.gameState !== 'reveal') {
             const { host, guest } = gameData.playerGuesses;
-            // CHECK: Ensure we haven't already processed this round
+            // Ensure we haven't already processed this round
             if (revealProcessed.current === gameData.currentRound) return;
 
             const isSolo = mode === 'solo';
