@@ -10,9 +10,9 @@
 Challenge friends to guess songs from your favorite artists. Features synchronized audio playback using the iTunes API and Firebase Realtime Database.
 
 <p align="center">
-  <img src="assets/screenshots/home.png" width="30%" />
-  <img src="assets/screenshots/gameplay.png" width="30%" />
-  <img src="assets/screenshots/result.png" width="30%" />
+  <img src="./assets/screenshots/home.png" width="30%" />
+  <img src="./assets/screenshots/gameplay.png" width="30%" />
+  <img src="./assets/screenshots/result.png" width="30%" />
 </p>
 
 ## Features
